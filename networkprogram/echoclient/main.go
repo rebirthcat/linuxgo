@@ -12,24 +12,38 @@ import (
 var(
 	remoteAddr string
 	remotePort string
+	localAddr  string
+	localPort  string
 )
 
 func main() {
 
 	flag.StringVar(&remoteAddr,"h","127.0.0.1","remoteAddr")
 	flag.StringVar(&remotePort,"p","3333","remotePort")
+	flag.StringVar(&localAddr,"lh","","localAddr")
+	flag.StringVar(&localPort,"lp","","localPort")
+	flag.Parse()
 
 	var err error
 	var tcpAddr *net.TCPAddr
+	var localTcpAddr *net.TCPAddr
 	var conn net.Conn
 
 	var buf =make([]byte,1024)
 	var temp []byte
 	var inputReader=bufio.NewReader(os.Stdin)
 	var n int
+
 	tcpAddr,err=net.ResolveTCPAddr("tcp",remoteAddr+":"+remotePort)
 	checkError(err)
-	conn,err=net.DialTCP("tcp",nil,tcpAddr)
+	if localPort==""&&localAddr==""{
+		localTcpAddr=nil
+	}else {
+		localTcpAddr,err=net.ResolveTCPAddr("tcp",localAddr+":"+localPort)
+		checkError(err)
+	}
+
+	conn,err=net.DialTCP("tcp",localTcpAddr,tcpAddr)
 	checkError(err)
 
 	for true {

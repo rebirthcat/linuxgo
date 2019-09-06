@@ -47,6 +47,7 @@ func handleClient(conn net.Conn) {
 	var readstr string
 	for true {
 		n, err = conn.Read(buf)
+		conn.Close()
 		if err == io.EOF {
 			fmt.Printf("client:%s closed\n", conn.RemoteAddr().String())
 			conn.Close()
